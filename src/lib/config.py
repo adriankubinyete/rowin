@@ -1,7 +1,16 @@
 import configparser
 import copy
 import logging
+import os
+import sys
 from pathlib import Path
+
+
+def get_resource_path(filename):
+    """Resolve path para o arquivo mesmo dentro do .exe (modo PyInstaller)."""
+    if hasattr(sys, "_MEIPASS"):
+        return os.path.join(sys._MEIPASS, filename)
+    return os.path.abspath(filename)
 
 
 class ConfigManager:
@@ -16,7 +25,7 @@ class ConfigManager:
     def _initialize(self, logger=None):
         self.config = configparser.ConfigParser()
         self.cached_config = None
-        self.config_file = "config.ini"
+        self.config_file = get_resource_path("config.ini")
         self.logger = logger or logging.getLogger(__name__ + "." + "ConfigManager")
 
         # Create config file if it doesn't exist

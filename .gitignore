@@ -1,3 +1,42 @@
-config.ini
+# cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
 *.pyc
-logs/*
+*.pdb
+
+# venvs
+.venv/
+venv/
+env/
+ENV/
+
+# PyInstaller
+dist/
+build/
+*.spec
+
+# logs
+logs/
+*.log
+
+# ide stuff
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# pytest stuff
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# conf files
+config.ini
+*.env
+
+# os files
+*.swp
+*~
