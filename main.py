@@ -1,10 +1,10 @@
 import logging
 
-from src.app.utils.logging import console_handler
 from src.app.Application import Application
+from src.app.utils.logging import console_handler
 
 if __name__ == "__main__":
-    logger = logging.getLogger('app')
+    logger = logging.getLogger("app")
     logger.setLevel(logging.TEST)
     logger.addHandler(console_handler)
     app = Application(
@@ -13,6 +13,6 @@ if __name__ == "__main__":
         height=450,
         resizeable=False,
         exceptionHandler=lambda *args: None,
-        logger=logger
+        logger=logger,
     )
     app.root.mainloop()

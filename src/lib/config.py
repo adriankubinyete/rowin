@@ -1,7 +1,6 @@
 import configparser
 import copy
 import logging
-
 from pathlib import Path
 
 
@@ -18,7 +17,7 @@ class ConfigManager:
         self.config = configparser.ConfigParser()
         self.cached_config = None
         self.config_file = "config.ini"
-        self.logger = logger or logging.getLogger(__name__ + '.' + 'ConfigManager')
+        self.logger = logger or logging.getLogger(__name__ + "." + "ConfigManager")
 
         # Create config file if it doesn't exist
         if not Path(self.config_file).exists():
@@ -40,9 +39,7 @@ class ConfigManager:
         logger = self.__getLogger("load")
         logger.debug("Loading configuration")
         self.config.read(self.config_file)
-        logger.debug(
-            "Configuration loaded successfully: %s", self.config.sections()
-        )
+        logger.debug("Configuration loaded successfully: %s", self.config.sections())
         self.cached_config = copy.deepcopy(self.config)
 
     def save(self):

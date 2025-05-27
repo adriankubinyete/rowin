@@ -1,16 +1,16 @@
 import logging
-import tkinter as tk
-import pygetwindow as gw
-import pyautogui
-import keyboard
-import win32process
-import win32gui
-import psutil
-import autoit
 import time
-
+import tkinter as tk
 from collections import defaultdict
 from tkinter import ttk
+
+import autoit
+import keyboard
+import psutil
+import pyautogui
+import pygetwindow as gw
+import win32gui
+import win32process
 
 from src.app.utils.styling import root_disable_notebook_page_focus
 from src.lib.config import Config as config
@@ -57,7 +57,7 @@ class Application:
         height: int = 250,
         resizeable: bool = False,
         exceptionHandler: callable = lambda *args: None,
-        logger: callable = logging.getLogger(__name__)
+        logger: callable = logging.getLogger(__name__),
     ):
         # --- APP VARIABLES
         self.APPLICATION_NAME = title
@@ -79,7 +79,9 @@ class Application:
         self.root.resizable(self.APPLICATION_RESIZEABLE, self.APPLICATION_RESIZEABLE)
         self.root.report_callback_exception = self.APPLICATION_EXCEPTION_HANDLER
 
-        self.var_app_keybind = tk.StringVar(value=config.get("APPLICATION", "app_keybind", fallback="f1"))
+        self.var_app_keybind = tk.StringVar(
+            value=config.get("APPLICATION", "app_keybind", fallback="f1")
+        )
 
         # --- WIDGETS
         self._create_notebook()
@@ -156,7 +158,9 @@ class Application:
 
         # footer_frame ocupa tudo e expande no frame pai
         footer_frame = ttk.Frame(frame)
-        footer_frame.pack(fill="both", expand=True)  # <- expand e fill para ocupar todo espaço
+        footer_frame.pack(
+            fill="both", expand=True
+        )  # <- expand e fill para ocupar todo espaço
 
         keybind = self.var_app_keybind.get().upper()
         self.start_button = ttk.Button(
@@ -164,7 +168,7 @@ class Application:
             text=f"Start Application - [{keybind}]",
             command=self._toggle_application,
             takefocus=False,
-            padding=(10, 5)
+            padding=(10, 5),
         )
         # Agora pack com expand e fill para centralizar vertical e horizontal
         self.start_button.pack(expand=True)
@@ -191,11 +195,15 @@ class Application:
         self._running = True
 
         keybind = self.var_app_keybind.get().upper()  # <<<<<<<<<<<<<<<<<<<<<<
-        self.start_button.config(text=f"Stop Application - [{keybind}]")  # <<<<<<<<<<<<<<<<<<<<<<
+        self.start_button.config(
+            text=f"Stop Application - [{keybind}]"
+        )  # <<<<<<<<<<<<<<<<<<<<<<
         self._update_title_running(True)
 
         # Força seleção da aba Main ao iniciar
-        logger.debug("Forcing user to select Main tab...")  # Alterado de trace para debug, não obrigatório
+        logger.debug(
+            "Forcing user to select Main tab..."
+        )  # Alterado de trace para debug, não obrigatório
         main_index = self.notebook.index(self.page_frames["Main"])
         self.notebook.select(main_index)
         self._notebook_current_tab = main_index  # atualiza controle de aba
@@ -213,7 +221,7 @@ class Application:
         DEFAULT_DELAY_MINUTES = 15
         if not self._running:
             self._autorun_next_tick_time = None  # limpa próximo tick
-            self._update_next_tick_label()       # limpa label
+            self._update_next_tick_label()  # limpa label
             return
 
         self._run_main_task()
@@ -249,7 +257,9 @@ class Application:
         self._running = False
 
         keybind = self.var_app_keybind.get().upper()  # <<<<<<<<<<<<<<<<<<<<<<
-        self.start_button.config(text=f"Start Application - [{keybind}]")  # <<<<<<<<<<<<<<<<<<<<<<
+        self.start_button.config(
+            text=f"Start Application - [{keybind}]"
+        )  # <<<<<<<<<<<<<<<<<<<<<<
         self._update_title_running(False)
 
         if self._autorun_job:
@@ -257,7 +267,10 @@ class Application:
             self._autorun_job = None
 
         # stopping keep-alive countdown
-        if hasattr(self, "_autorun_update_job") and self._autorun_update_job is not None:
+        if (
+            hasattr(self, "_autorun_update_job")
+            and self._autorun_update_job is not None
+        ):
             self.root.after_cancel(self._autorun_update_job)
             self._autorun_update_job = None
 
@@ -269,7 +282,10 @@ class Application:
         self.root.title(base_title + suffix)
 
     def _start_next_tick_updater(self):
-        if hasattr(self, "_autorun_update_job") and self._autorun_update_job is not None:
+        if (
+            hasattr(self, "_autorun_update_job")
+            and self._autorun_update_job is not None
+        ):
             self.root.after_cancel(self._autorun_update_job)
 
         def update_label():
@@ -281,7 +297,9 @@ class Application:
             if seconds_left < 0:
                 seconds_left = 0
 
-            self.next_tick_label.config(text=f"Next run in {seconds_left} seconds", foreground="blue")
+            self.next_tick_label.config(
+                text=f"Next run in {seconds_left} seconds", foreground="blue"
+            )
 
             if seconds_left > 0:
                 self._autorun_update_job = self.root.after(1000, update_label)
@@ -300,26 +318,48 @@ class Application:
         action_frame = ttk.LabelFrame(frame, text="General")
         action_frame.pack(fill="x", padx=10, pady=10)
 
-        self.var_action_key = tk.StringVar(value=config.get("APPLICATION", "action_key", fallback="space"))
-        self.var_action_delay = tk.StringVar(value=config.get("APPLICATION", "action_delay", fallback="0"))
-        self.var_action_hold_duration = tk.StringVar(value=config.get("APPLICATION", "action_key_hold_duration", fallback="250"))
-        self.var_ignored_pids = tk.StringVar(value=config.get("APPLICATION", "ignored_pids", fallback=""))
-        self.var_preserve_focus = tk.BooleanVar(value=config.get("APPLICATION", "preserve_focus", fallback="False") == "True")
+        self.var_action_key = tk.StringVar(
+            value=config.get("APPLICATION", "action_key", fallback="space")
+        )
+        self.var_action_delay = tk.StringVar(
+            value=config.get("APPLICATION", "action_delay", fallback="0")
+        )
+        self.var_action_hold_duration = tk.StringVar(
+            value=config.get("APPLICATION", "action_key_hold_duration", fallback="250")
+        )
+        self.var_ignored_pids = tk.StringVar(
+            value=config.get("APPLICATION", "ignored_pids", fallback="")
+        )
+        self.var_preserve_focus = tk.BooleanVar(
+            value=config.get("APPLICATION", "preserve_focus", fallback="False")
+            == "True"
+        )
 
         chk_preserve_focus = ttk.Checkbutton(
             action_frame,
             text="Preserve pre-keep-alive focus (unreliable)",
             variable=self.var_preserve_focus,
             command=self._on_preserve_focus_changed,
-            takefocus=False
+            takefocus=False,
         )
         chk_preserve_focus.pack(anchor="w", padx=10, pady=5)
 
         # Cria as entries normais com autosave
-        entry_action_key = self._create_labeled_entry(action_frame, "Action Key:", self.var_action_key, "action_key")  # noqa
-        entry_action_delay = self._create_labeled_entry(action_frame, "Action Delay (ms):", self.var_action_delay, "action_delay")  # noqa
-        entry_action_hold = self._create_labeled_entry(action_frame, "Action Key Hold Duration (ms):", self.var_action_hold_duration, "action_key_hold_duration")  # noqa
-        entry_ignored_pids = self._create_labeled_entry(action_frame, "Ignored Pids:", self.var_ignored_pids, "ignored_pids")  # noqa
+        entry_action_key = self._create_labeled_entry(  # noqa
+            action_frame, "Action Key:", self.var_action_key, "action_key"
+        )
+        entry_action_delay = self._create_labeled_entry(  # noqa
+            action_frame, "Action Delay (ms):", self.var_action_delay, "action_delay"
+        )
+        entry_action_hold = self._create_labeled_entry(  # noqa
+            action_frame,
+            "Action Key Hold Duration (ms):",
+            self.var_action_hold_duration,
+            "action_key_hold_duration",
+        )
+        entry_ignored_pids = self._create_labeled_entry(  # noqa
+            action_frame, "Ignored Pids:", self.var_ignored_pids, "ignored_pids"
+        )
 
         # Application Keybind com botão para capturar tecla
         container = ttk.Frame(action_frame)
@@ -328,27 +368,45 @@ class Application:
         lbl = ttk.Label(container, text="Application Keybind:")
         lbl.pack(side="left")
 
-        self.btn_capture_key = ttk.Button(container, width=20, text=f"Current key: {self.var_app_keybind.get().upper()}", command=self._start_key_capture, takefocus=False)
+        self.btn_capture_key = ttk.Button(
+            container,
+            width=20,
+            text=f"Current key: {self.var_app_keybind.get().upper()}",
+            command=self._start_key_capture,
+            takefocus=False,
+        )
         self.btn_capture_key.pack(side="right", padx=(10, 0))
 
         # --- TILER ---
         tiler_frame = ttk.LabelFrame(frame, text="Window Tiler")
         tiler_frame.pack(fill="x", padx=10, pady=10)
 
-        self.var_tiler_enabled = tk.BooleanVar(value=config.get("APPLICATION", "tiler_enabled", fallback="False") == "True")
-        self.var_tiler_gapx = tk.StringVar(value=config.get("APPLICATION", "tiler_gapx", fallback="10"))
-        self.var_tiler_gapy = tk.StringVar(value=config.get("APPLICATION", "tiler_gapy", fallback="10"))
+        self.var_tiler_enabled = tk.BooleanVar(
+            value=config.get("APPLICATION", "tiler_enabled", fallback="False") == "True"
+        )
+        self.var_tiler_gapx = tk.StringVar(
+            value=config.get("APPLICATION", "tiler_gapx", fallback="10")
+        )
+        self.var_tiler_gapy = tk.StringVar(
+            value=config.get("APPLICATION", "tiler_gapy", fallback="10")
+        )
 
         ttk.Checkbutton(
             tiler_frame,
             text="Enable Tiler",
             variable=self.var_tiler_enabled,
-            command=lambda: self._toggle_fields("tiler_enabled", self.var_tiler_enabled, self._tiler_entries),
+            command=lambda: self._toggle_fields(
+                "tiler_enabled", self.var_tiler_enabled, self._tiler_entries
+            ),
             takefocus=False,
         ).pack(anchor="w", padx=10, pady=5)
 
-        entry_gapx = self._create_labeled_entry(tiler_frame, "Gap X:", self.var_tiler_gapx, "tiler_gapx", takefocus=False)
-        entry_gapy = self._create_labeled_entry(tiler_frame, "Gap Y:", self.var_tiler_gapy, "tiler_gapy", takefocus=False)
+        entry_gapx = self._create_labeled_entry(
+            tiler_frame, "Gap X:", self.var_tiler_gapx, "tiler_gapx", takefocus=False
+        )
+        entry_gapy = self._create_labeled_entry(
+            tiler_frame, "Gap Y:", self.var_tiler_gapy, "tiler_gapy", takefocus=False
+        )
 
         self._setup_autosave_entry(entry_gapx, self.var_tiler_gapx, "tiler_gapx")
         self._setup_autosave_entry(entry_gapy, self.var_tiler_gapy, "tiler_gapy")
@@ -360,14 +418,21 @@ class Application:
         autorun_frame = ttk.LabelFrame(frame, text="Auto Run")
         autorun_frame.pack(fill="x", padx=10, pady=10)
 
-        self.var_autorun_enabled = tk.BooleanVar(value=config.get("APPLICATION", "autorun_enabled", fallback="False") == "True")
-        self.var_autorun_delay = tk.StringVar(value=config.get("APPLICATION", "autorun_delay_minutes", fallback="5"))
+        self.var_autorun_enabled = tk.BooleanVar(
+            value=config.get("APPLICATION", "autorun_enabled", fallback="False")
+            == "True"
+        )
+        self.var_autorun_delay = tk.StringVar(
+            value=config.get("APPLICATION", "autorun_delay_minutes", fallback="5")
+        )
 
         ttk.Checkbutton(
             autorun_frame,
             text="Enable Auto Run",
             variable=self.var_autorun_enabled,
-            command=lambda: self._toggle_fields("autorun_enabled", self.var_autorun_enabled, self._autorun_entries),
+            command=lambda: self._toggle_fields(
+                "autorun_enabled", self.var_autorun_enabled, self._autorun_entries
+            ),
             takefocus=False,
         ).pack(anchor="w", padx=10, pady=5)
 
@@ -376,9 +441,16 @@ class Application:
 
         lbl_delay = ttk.Label(autorun_inputs_frame, text="Run every")
         lbl_delay.pack(side="left", padx=(0, 5))
-        entry_delay = ttk.Entry(autorun_inputs_frame, textvariable=self.var_autorun_delay, width=6, takefocus=False)
+        entry_delay = ttk.Entry(
+            autorun_inputs_frame,
+            textvariable=self.var_autorun_delay,
+            width=6,
+            takefocus=False,
+        )
         entry_delay.pack(side="left")
-        self._setup_autosave_entry(entry_delay, self.var_autorun_delay, "autorun_delay_minutes")
+        self._setup_autosave_entry(
+            entry_delay, self.var_autorun_delay, "autorun_delay_minutes"
+        )
 
         lbl_minutes = ttk.Label(autorun_inputs_frame, text="minutes")
         lbl_minutes.pack(side="left", padx=(5, 0))
@@ -405,7 +477,7 @@ class Application:
         self.root.bind("<Key>", self._on_key_capture)
 
     def _show_message(self, message: str):
-        logger = self.__getLogger('msg')
+        logger = self.__getLogger("msg")
         logger.test(message)
 
     def _on_key_capture(self, event):
@@ -417,7 +489,9 @@ class Application:
         # Valida tecla
         if not self._is_valid_key(new_key):
             self._show_message(f"Tecla '{new_key}' inválida! Mantendo antiga.")
-            self.btn_capture_key.config(text=f"Tecla atual: {self.var_app_keybind.get().upper()}")
+            self.btn_capture_key.config(
+                text=f"Tecla atual: {self.var_app_keybind.get().upper()}"
+            )
             # Re-registra hotkey antiga porque não mudou
             self._register_app_hotkey(self.var_app_keybind.get())
             return
@@ -426,10 +500,14 @@ class Application:
         try:
             self._hotkey_handle = keyboard.add_hotkey(new_key, self._toggle_application)
         except Exception as e:
-            self._show_message(f"Falha ao registrar a nova tecla '{new_key}': {e}. Mantendo antiga.")
+            self._show_message(
+                f"Falha ao registrar a nova tecla '{new_key}': {e}. Mantendo antiga."
+            )
             # Re-registra hotkey antiga porque não mudou
             self._register_app_hotkey(self.var_app_keybind.get())
-            self.btn_capture_key.config(text=f"Tecla atual: {self.var_app_keybind.get().upper()}")
+            self.btn_capture_key.config(
+                text=f"Tecla atual: {self.var_app_keybind.get().upper()}"
+            )
             return
 
         # Atualiza o var e salva config
@@ -451,14 +529,18 @@ class Application:
         except Exception:
             return False
 
-    def _create_labeled_entry(self, parent, label, var, config_key, takefocus=False, entry_width=20):
+    def _create_labeled_entry(
+        self, parent, label, var, config_key, takefocus=False, entry_width=20
+    ):
         container = ttk.Frame(parent)
         container.pack(fill="x", padx=20, pady=2)
 
         lbl = ttk.Label(container, text=label)
         lbl.pack(side="left")
 
-        entry = ttk.Entry(container, textvariable=var, takefocus=takefocus, width=entry_width)
+        entry = ttk.Entry(
+            container, textvariable=var, takefocus=takefocus, width=entry_width
+        )
         entry.pack(side="right", padx=(10, 0))
 
         entry.bind("<FocusOut>", lambda e: self._on_save_entry(config_key, var))
@@ -480,7 +562,9 @@ class Application:
         config.set("APPLICATION", key, var.get())
         config.save()
 
-    def _setup_autosave_entry(self, entry: ttk.Entry, var: tk.StringVar, config_key: str, delay_ms=2000):
+    def _setup_autosave_entry(
+        self, entry: ttk.Entry, var: tk.StringVar, config_key: str, delay_ms=2000
+    ):
         if not hasattr(self, "_autosave_after_ids"):
             self._autosave_after_ids = {}
 
@@ -491,7 +575,9 @@ class Application:
 
             def save_action():
                 logger = self.__getLogger("_setup_autosave_entry")
-                logger.debug(f"Auto-saving config key '{config_key}' with value '{var.get()}'")
+                logger.debug(
+                    f"Auto-saving config key '{config_key}' with value '{var.get()}'"
+                )
                 self._on_save_entry(config_key, var)
 
             self._autosave_after_ids[entry] = self.root.after(delay_ms, save_action)
@@ -502,7 +588,9 @@ class Application:
             if after_id:
                 self.root.after_cancel(after_id)
             logger = self.__getLogger("_setup_autosave_entry")
-            logger.debug(f"Enter pressed, saving config key '{config_key}' with value '{var.get()}'")
+            logger.debug(
+                f"Enter pressed, saving config key '{config_key}' with value '{var.get()}'"
+            )
             self._on_save_entry(config_key, var)
             self.root.focus()  # tira o foco do entry
 
@@ -514,7 +602,9 @@ class Application:
             saved_val = config.get("APPLICATION", config_key, fallback=var.get())
             var.set(saved_val)
             logger = self.__getLogger("_setup_autosave_entry")
-            logger.debug(f"Escape pressed, reverted config key '{config_key}' to '{saved_val}'")
+            logger.debug(
+                f"Escape pressed, reverted config key '{config_key}' to '{saved_val}'"
+            )
             self.root.focus()  # tira o foco do entry
 
         entry.bind("<KeyRelease>", on_keyrelease)
@@ -532,7 +622,9 @@ class Application:
         container.place(relx=0.5, rely=0.5, anchor="center")
         # container.pack_propagate(False)
 
-        ttk.Label(container, text="Focused Window Info:").pack(anchor="center", pady=(0, 10))
+        ttk.Label(container, text="Focused Window Info:").pack(
+            anchor="center", pady=(0, 10)
+        )
 
         self.var_window_title = tk.StringVar(value="N/A")
         self.var_window_pid = tk.StringVar(value="N/A")
@@ -542,10 +634,7 @@ class Application:
         pid_row.pack(fill="x", padx=10, pady=2)
         ttk.Label(pid_row, text="Process ID:").pack(side="left")
         lbl_pid = ttk.Label(
-            pid_row,
-            textvariable=self.var_window_pid,
-            foreground="blue",
-            cursor="hand2"
+            pid_row, textvariable=self.var_window_pid, foreground="blue", cursor="hand2"
         )
         lbl_pid.pack(side="left", padx=5, fill="x", expand=True)
 
@@ -569,7 +658,7 @@ class Application:
             foreground="blue",
             cursor="hand2",
             wraplength=350,
-            justify="left"
+            justify="left",
         )
         lbl_title.pack(side="left", padx=5, fill="x", expand=True)
 
@@ -631,7 +720,10 @@ class Application:
             logger.warning("Nenhuma janela válida encontrada.")
             return
 
-        tiler_enabled = config.get("APPLICATION", "tiler_enabled", fallback="false").lower() == "true"
+        tiler_enabled = (
+            config.get("APPLICATION", "tiler_enabled", fallback="false").lower()
+            == "true"
+        )
         if tiler_enabled:
             self.tile_windows(target_windows)
 
@@ -642,7 +734,9 @@ class Application:
 
         # Ignorar PIDs definidos no config
         ignored_pids = config.get("APPLICATION", "ignored_pids", fallback="")
-        ignored_pids = [int(pid.strip()) for pid in ignored_pids.split(",") if pid.strip().isdigit()]
+        ignored_pids = [
+            int(pid.strip()) for pid in ignored_pids.split(",") if pid.strip().isdigit()
+        ]
 
         affected_windows = []
 
@@ -676,8 +770,13 @@ class Application:
 
         action_key = config.get("APPLICATION", "action_key", fallback="space")
         action_delay = int(config.get("APPLICATION", "action_delay", fallback="250"))
-        action_key_hold = int(config.get("APPLICATION", "action_key_hold_duration", fallback="0"))
-        preserve_focus = config.get("APPLICATION", "preserve_focus", fallback="true").lower() == "true"
+        action_key_hold = int(
+            config.get("APPLICATION", "action_key_hold_duration", fallback="0")
+        )
+        preserve_focus = (
+            config.get("APPLICATION", "preserve_focus", fallback="true").lower()
+            == "true"
+        )
 
         # Salva a janela que está com foco antes das mudanças
         if preserve_focus:
@@ -708,9 +807,13 @@ class Application:
             try:
                 win32gui.SetForegroundWindow(original_foreground_hwnd)
             except Exception as e:
-                logger.warning(f"Não foi possível restaurar o foco para a janela original: {e}")
+                logger.warning(
+                    f"Não foi possível restaurar o foco para a janela original: {e}"
+                )
         else:
-            logger.debug("Não havia janela com foco anteriormente ou janela inválida, não restaura foco")
+            logger.debug(
+                "Não havia janela com foco anteriormente ou janela inválida, não restaura foco"
+            )
 
     def tile_windows(self, windows):
         logger = self.__getLogger("tile_windows")
