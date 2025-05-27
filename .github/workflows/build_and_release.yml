@@ -3,17 +3,17 @@ name: Build and Release
 on:
   push:
     tags:
-      - '*'
+      - 'v*'
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.6.0
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v4.9.1
         with:
           python-version: '3.13'
 
@@ -26,7 +26,7 @@ jobs:
         run: python build.py
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: rowin-executable
           path: dist/rowin.exe
@@ -37,7 +37,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.3.0
         with:
           name: rowin-executable
           path: release_files
