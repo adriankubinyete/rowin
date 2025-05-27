@@ -16,9 +16,6 @@ def build():
     # Nome do exe gerado (igual ao script sem extensão)
     exe_name = os.path.splitext(os.path.basename(script))[0]
 
-    # Arquivo de config
-    config_file = "config.ini"
-
     # Monta o comando PyInstaller
     cmd = [
         sys.executable,
@@ -28,7 +25,6 @@ def build():
         "--onefile",
         "--windowed",  # para não abrir terminal na execução (Tkinter)
         f"--name={exe_name}",
-        f"--add-data={config_file};.",
         f"--add-binary={dll_path};autoit/lib",
         "--hidden-import=src.app",
     ]
