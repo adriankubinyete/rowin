@@ -3,3 +3,4 @@ keyboard
 psutil
 pywin32
 pyautoit
+pyautogui
