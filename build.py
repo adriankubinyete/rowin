@@ -11,10 +11,10 @@ def build():
     dll_path = os.path.join(import_path, "lib", "AutoItX3_x64.dll")
 
     # Nome do script principal - altere se quiser
-    script = "rowin.py"
+    script = "main.py"
 
     # Nome do exe gerado (igual ao script sem extensão)
-    exe_name = os.path.splitext(os.path.basename(script))[0]
+    exe_name = "rowin"
 
     # Monta o comando PyInstaller
     cmd = [
